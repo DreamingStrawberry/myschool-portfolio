@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/default">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+ <style>
+   section {
+     width:1100px;
+     height:600px;
+     margin:auto;
+     position:relative;
+   }
+   section #pwdform {
+     width:300px;
+     height:300px;
+     position:absolute;
+     left:400px;
+     top:100px;
+     visibility:hidden;
+     border:1px solid green;
+     padding:3px;
+     background:white;
+   }
+   section #pwdform div {
+     margin-top:10px;
+     text-align:center;
+   } 
+   section #pwdform input[type=password] {
+     width:280px;
+     height:30px;
+   }
+   section #pwdform input[type=submit] {
+     width:288px;
+     height:34px;
+     background:green;
+     color:white;
+     border:1px solid green;
+   }
+   section #pwdform input[type=button] {
+     width:288px;
+     height:34px;
+     background:white;
+     color:green;
+     border:1px solid green;
+   }
+   section #pwdform #pmsg {
+     font-size:12px;
+   }
+   section table {
+     border-spacing:0px;
+   }
+   section table tr td {
+     height:50px;
+     border-bottom:1px solid #dddddd;
+     padding:6px;
+   }
+   section table tr:first-child td {
+     border-top:2px solid #dddddd;
+   }
+   section table tr:last-child td {
+     border-bottom:2px solid  #dddddd;
+   }
+ </style>
+ <script>
+   function chgInfo(n)
+   {
+	   var data=document.getElementsByClassName("data")[n].value;
+	   
+	   var chk=new XMLHttpRequest();
+	   chk.onload=function()
+	   {
+		   
+	   }
+	   chk.open("get","chgInfo?n="+n+"&data="+data);
+	   chk.send();
+   }
+ </script>
+</head>
+<body>
+  <section layout:fragment="content">
+     <table width="500" align="center">
+      <caption> <h3> 선생님 정보 </h3></caption>
+      <tr>
+        <td> 아이디 </td>
+        <td th:text="${tdto.userid}"></td>
+      </tr>
+       <tr>
+        <td> 이 름 </td>
+        <td th:text="${tdto.name}"></td>
+      </tr>
+      <tr>
+        <td> 이메일 </td>
+        <td>
+          <input type="text" class="data" th:value="${tdto.email}"> 
+          <input type="button" value="변경" onclick="chgInfo(0)">
+        </td>
+      </tr>
+      <tr>
+        <td> 전 화 </td>
+        <td>
+          <input type="text" class="data" th:value="${tdto.phone}"> 
+          <input type="button" value="변경" onclick="chgInfo(1)">
+        </td>
+      </tr>
+      <tr>
+        <td> 반 </td>
+        <td th:text="${tdto.ban}"></td>
+      </tr>
+      <tr>
+        <td> 레 벨 </td>
+        <td th:text="${tdto.level}"></td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center">
+          <input type="button" value="비밀번호변경" onclick="chgPwd()">
+        </td>
+      </tr>
+      <tr th:if="${err=='1'}">
+        <td colspan="2" align="center" style="color:red;">
+           기존 비밀번호가 틀립니다.
+        </td>
+      </tr>
+    </table>
+    
+    <div id="pwdform">
+      <form name="pform" onsubmit="return check(this)" method="post" action="pwdChg">
+        <div> <h4> 비밀번호 변경 </h4></div>
+        <div> <input type="password" name="oldPwd" placeholder="기존 비밀번호"> </div>
+        <div> <input type="password" name="pwd" placeholder="새 비밀번호" onkeyup="pwdCheck()"> </div>
+        <div> <input type="password" name="pwd2" placeholder="새 비밀번호 확인" onkeyup="pwdCheck()"> <br> <span id="pmsg"></span> </div>
+        <div> <input type="submit" value="변경하기"> </div>
+        <div> <input type="button" value="취소" onclick="hideform()"> </div>
+      </form>
+    </div>
+    
+   <script>
+    function hideform()
+    {
+    	document.getElementById("pwdform").style.visibility="hidden";
+    }
+    var pchk=0;
+    function check(form)
+    {
+    	if(form.oldPwd.value=="")
+    	{
+    		alert("이전 비밀번호를 적으세요");
+    		form.oldPwd.focus();
+    		return false;
+    	}
+    	else if(pchk==0)
+    		 {
+    		    alert("새 비밀번호를 확인하세요");
+    		    return false;
+    		 }
+    	     else
+    	    	return true;
+    }
+    function chgPwd()
+    {
+    	document.getElementById("pwdform").style.visibility="visible";
+    }
+    function pwdCheck()
+    {
+    	var pwd=document.pform.pwd.value;
+    	var pwd2=document.pform.pwd2.value;
+    	
+    	if(pwd2.length!=0) // 첫번째 비번 입력시에는 동작하지 않기 => 두번째 비밀번호가 없을때
+    	{
+    		if(pwd==pwd2)
+        	{
+        		document.getElementById("pmsg").innerText="비밀번호가 일치합니다";
+        		document.getElementById("pmsg").style.color="blue";
+        		pchk=1;
+        	}	
+        	else
+        	{
+        		document.getElementById("pmsg").innerText="비밀번호가 일치하지 않습니다";
+        		document.getElementById("pmsg").style.color="red";
+        		pchk=0;
+        	}	
+    	}	
+    }
+    </script>
+  </section>
+</body>
+</html>
+
